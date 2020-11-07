@@ -166,7 +166,14 @@
   <data name="CountArgumentDescription" xml:space="preserve">
     <value>Show no more than specified number of results</value>
   </data>
-  <data name="Done" xml:space="preserve">
+  <data name="CreateCommandLongDescription" xml:space="preserve">
+    <value>The create command is a wizard designed to help you submit manifest files to the Community repository. 
+https://www.github.com/microsoft/winget-pkgs </value>
+  </data>
+  <data name="CreateCommandShortDescription" xml:space="preserve">
+    <value>Helper to create manifests and submit pull requests</value>
+  </data>
+	<data name="Done" xml:space="preserve">
     <value>Done</value>
   </data>
   <data name="ExactArgumentDescription" xml:space="preserve">
@@ -277,6 +284,9 @@ They can be configured through the settings file 'winget settings'.</value>
   <data name="InstallerHashVerified" xml:space="preserve">
     <value>Successfully verified installer hash</value>
   </data>
+  <data name="InstallerURLArgumentDescription" xml:space="preserve">
+    <value>URL to Installer File</value>
+  </data>	
   <data name="InstallFlowInstallSuccess" xml:space="preserve">
     <value>Successfully installed</value>
   </data>
@@ -715,7 +725,13 @@ They can be configured through the settings file 'winget settings'.</value>
   <data name="VerifyFileFailedNotExist" xml:space="preserve">
     <value>File does not exist:</value>
   </data>
-  <data name="BothManifestAndSearchQueryProvided" xml:space="preserve">
+  <data name="VerifyInstallerURLFailedNotValid" xml:space="preserve">
+    <value>Installer URL is not valid:</value>
+  </data>
+  <data name="VerifyInstallerURLFailedNotHTTPS" xml:space="preserve">
+    <value>Installer URL is not secure, URL needs to be HTTPS:</value>
+  </data>
+	<data name="BothManifestAndSearchQueryProvided" xml:space="preserve">
     <value>Both local manifest and search query args are provided</value>
   </data>
   <data name="Logs" xml:space="preserve">

@@ -193,6 +193,7 @@
     <ClInclude Include="ExecutionContext.h" />
     <ClInclude Include="ExecutionProgress.h" />
     <ClInclude Include="ExecutionReporter.h" />
+    <ClInclude Include="CreateCommand.h" />
     <ClInclude Include="Invocation.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Public\AppInstallerCLICore.h" />
@@ -236,6 +237,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="CreateCommand.cpp" />
     <ClCompile Include="VTSupport.cpp" />
     <ClCompile Include="Workflows\CompletionFlow.cpp" />
     <ClCompile Include="Workflows\MSStoreInstallerHandler.cpp" />

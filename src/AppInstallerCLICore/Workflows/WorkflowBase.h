@@ -180,6 +180,18 @@ namespace AppInstaller::CLI::Workflow
         Execution::Args::Type m_arg;
     };
 
+    //
+
+    struct VerifyInstallerURL : public WorkflowTask
+    {
+        VerifyInstallerURL(Execution::Args::Type arg) : WorkflowTask("VerifyInstallerURL"), m_arg(arg) {}
+
+        void operator()(Execution::Context& context) const override;
+
+    private:
+        Execution::Args::Type m_arg;
+    };
+
     // Opens the manifest file provided on the command line.
     // Required Args: Manifest
     // Inputs: None

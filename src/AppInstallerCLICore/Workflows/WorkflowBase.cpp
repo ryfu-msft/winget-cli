@@ -6,6 +6,7 @@
 #include "ManifestComparator.h"
 #include "TableOutput.h"
 #include <winget/ManifestYamlParser.h>
+#include <regex>
 
 
 namespace AppInstaller::CLI::Workflow
@@ -477,6 +478,23 @@ namespace AppInstaller::CLI::Workflow
         {
             context.Reporter.Error() << Resource::String::VerifyFileFailedIsDirectory << ' ' << path.u8string() << std::endl;
             AICLI_TERMINATE_CONTEXT(HRESULT_FROM_WIN32(ERROR_DIRECTORY_NOT_SUPPORTED));
+        }
+    }
+
+    void VerifyInstallerURL::operator()(Execution::Context& context) const
+    {
+        std::string_view installerArgUTF8 = context.Args.GetArg(m_arg);
+        std::wstring installerArgUTF16 = Utility::ConvertToUTF16(installerArgUTF8);
+        LPCWSTR installerURL = installerArgUTF16.c_str();
+
+        if (IsValidURL(NULL, installerURL, 0) == S_FALSE) 
+        {
+            context.Reporter.Error() << Resource::String::VerifyInstallerURLFailedNotValid << ' ' << installerArgUTF8 << std::endl;
+        }
+
+        if (installerArgUTF16.find(L"https") == std::string::npos) 
+        {
+            context.Reporter.Error() << Resource::String::VerifyInstallerURLFailedNotHTTPS << ' ' << installerArgUTF8 << std::endl;
         }
     }
 

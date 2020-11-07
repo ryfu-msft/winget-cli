@@ -43,6 +43,8 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(CompleteCommandLongDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(CompleteCommandShortDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(CountArgumentDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(CreateCommandLongDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(CreateCommandShortDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(Done);
         WINGET_DEFINE_RESOURCE_STRINGID(ExactArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(ExperimentalArgumentDescription);
@@ -78,6 +80,7 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(InstallerHashMismatchOverridden);
         WINGET_DEFINE_RESOURCE_STRINGID(InstallerHashMismatchOverrideRequired);
         WINGET_DEFINE_RESOURCE_STRINGID(InstallerHashVerified);
+        WINGET_DEFINE_RESOURCE_STRINGID(InstallerURLArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(InstallFlowInstallSuccess);
         WINGET_DEFINE_RESOURCE_STRINGID(InstallFlowStartingPackageInstall);
         WINGET_DEFINE_RESOURCE_STRINGID(InstallForceArgumentDescription);
@@ -214,6 +217,8 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(VerifyFileFailedIsDirectory);
         WINGET_DEFINE_RESOURCE_STRINGID(VerifyFileFailedNotExist);
         WINGET_DEFINE_RESOURCE_STRINGID(VerifyFileSignedMsix);
+        WINGET_DEFINE_RESOURCE_STRINGID(VerifyInstallerURLFailedNotValid);
+        WINGET_DEFINE_RESOURCE_STRINGID(VerifyInstallerURLFailedNotHTTPS);
         WINGET_DEFINE_RESOURCE_STRINGID(VersionArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(VersionsArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(WordArgumentDescription);

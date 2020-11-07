@@ -68,6 +68,10 @@ namespace AppInstaller::CLI::Execution
 
             // Used for demonstration purposes
             ExperimentalArg,
+
+            // Create Command
+            InstallerURL,
+            Output,
         };
 
         bool Contains(Type arg) const { return (m_parsedArgs.count(arg) != 0); }

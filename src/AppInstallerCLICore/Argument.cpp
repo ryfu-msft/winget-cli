@@ -77,6 +77,8 @@ namespace AppInstaller::CLI
             return Argument{ "verbose-logs", NoAlias, Args::Type::VerboseLogs, Resource::String::VerboseLogsArgumentDescription, ArgumentType::Flag };
         case Args::Type::ExperimentalArg:
             return Argument{ "arg", NoAlias, Args::Type::ExperimentalArg, Resource::String::ExperimentalArgumentDescription, ArgumentType::Flag, ExperimentalFeature::Feature::ExperimentalArg };
+        case Args::Type::InstallerURL:
+            return Argument("url", NoAlias, Args::Type::InstallerURL, Resource::String::InstallerURLArgumentDescription, ArgumentType::Standard);
         default:
             THROW_HR(E_UNEXPECTED);
         }
