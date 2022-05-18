@@ -79,7 +79,7 @@
         "neutral"
       ],
       "description": "The installer target architecture"
-    },   
+    },
     "Scope": {
       "type": [ "string", "null" ],
       "enum": [
@@ -87,6 +87,26 @@
         "machine"
       ],
       "description": "Scope indicates if the installer is per user or per machine"
+    },
+    "NestedInstallerType": {
+      "type": [ "string", "null" ],
+      "enum": [
+        "msix",
+        "msi",
+        "appx",
+        "exe",
+        "inno",
+        "nullsoft",
+        "wix",
+        "burn",
+        "pwa",
+        "portable"
+      ],
+      "description": "Enumeration of supported nested installer types."
+    },
+    "NestedInstallerFilePath": {
+      "type": [ "string", "null" ],
+      "description": "Relative path to the nested installer file contained inside an archive."
     },
     "InstallModes": {
       "type": [ "array", "null" ],
@@ -201,7 +221,7 @@
           },
           "ReturnResponseUrl": {
             "$ref": "#/definitions/Url",
-            "description": "The return response url to provide additional guidance for expected return codes"            
+            "description": "The return response url to provide additional guidance for expected return codes"
           }
         }
       },
@@ -491,6 +511,12 @@
         },
         "InstallerType": {
           "$ref": "#/definitions/InstallerType"
+        },
+        "NestedInstallerType": {
+          "$ref": "#/definitions/NestedInstallerType"
+        },
+        "NestedInstallerFilePath": {
+          "$ref": "#/definitions/NestedInstallerFilePath"
         },
         "Scope": {
           "$ref": "#/definitions/Scope"
