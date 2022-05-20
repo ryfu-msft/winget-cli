@@ -15,6 +15,10 @@
 #include <AppInstallerDeployment.h>
 #include <winget/ARPCorrelation.h>
 
+//Adding this headers
+#include <shlobj.h>
+#include <shlwapi.h>
+
 using namespace winrt::Windows::ApplicationModel::Store::Preview::InstallControl;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -278,6 +282,9 @@ namespace AppInstaller::CLI::Workflow
             }
             context << PortableInstall;
             break;
+        case InstallerTypeEnum::Zip:
+            context << ZipInstall;
+            break;
         default:
             THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
         }
@@ -301,9 +308,95 @@ namespace AppInstaller::CLI::Workflow
 
     void PortableInstall(Execution::Context& context)
     {
+
+        //Create the IFileOperation interface;
+        IFileOperation* pfo;
+        HRESULT hr = CoCreateInstance(CLSID_FileOperation,
+            NULL,
+            CLSCTX_ALL,
+            IID_PPV_ARGS(&pfo));
+
+        if (SUCCEEDED(hr))
+        {
+            // Turn off all UI from being shown to the user during the operation.
+            pfo->SetOperationFlags(FOF_NO_UI);
+            if (SUCCEEDED(hr))
+            {
+                // Create IShellItem from destination path
+                IShellItem* psiTo = NULL; 
+                hr = SHCreateItemFromParsingName(L"C:\\Users\\ryfu\\AppData\\Local\\Temp\\ZipTemp", NULL, IID_PPV_ARGS(&psiTo));
+
+                if (SUCCEEDED(hr))
+                {
+                    LPITEMIDLIST pidl;
+                    IShellItem* psiFrom;
+                    IShellFolder* psf;
+                    IEnumIDList* pEnum;
+                    HRESULT result = SHParseDisplayName(L"C:\\Users\\ryfu\\Downloads\\paint.net.4.2.16.install.zip", NULL, &pidl, 0, NULL);
+                    result = SHBindToObject(NULL, pidl, NULL, IID_PPV_ARGS(&psf));
+                    psf->EnumObjects(nullptr, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &pEnum);
+
+                    LPITEMIDLIST pidlItem = NULL;
+                    ULONG nFetched;
+                    while (pEnum->Next(1, &pidlItem, &nFetched) == S_OK && nFetched == 1)
+                    {
+                        STRRET strFolderName;
+                        TCHAR szFolderName[MAX_PATH];
+                        if ((psf->GetDisplayNameOf(pidlItem, SHGDN_INFOLDER, &strFolderName) == S_OK) &&
+                            (StrRetToBuf(&strFolderName, pidlItem, szFolderName, MAX_PATH) == S_OK))
+                        {
+                            context.Reporter.Info() << szFolderName << std::endl;
+                            hr = SHCreateItemWithParent(NULL, psf, pidlItem, IID_PPV_ARGS(&psiFrom));
+                            pfo->CopyItem(psiFrom, psiTo, NULL, NULL);
+                        }
+                        ILFree(pidlItem);
+                    }
+
+                    hr = pfo->PerformOperations();
+
+                    psiTo->Release();
+                    pfo->Release();
+                }
+
+                CoUninitialize();
+
+            }
+        }
+        //Create method to get the shell item of a particular path...
+        // ShellHelper.GetShellFolder(std::filesystem::path& path);
+        // 
+        //context <<
+        //    PortableInstallImpl <<
+        //    ReportInstallerResult("Portable"sv, APPINSTALLER_CLI_ERROR_PORTABLE_INSTALL_FAILED, true);
+    }
+
+    void ZipInstall(Execution::Context& context)
+    {
+        LPITEMIDLIST pidlProgFiles = NULL;
+        IShellFolder* psfDeskTop = NULL;
+        IShellFolder* psfProgFiles = NULL;
+        LPENUMIDLIST ppenum = NULL;
+        HRESULT coHR = CoInitialize(NULL);
+        if (coHR == S_OK)
+        {
+            context.Reporter.Info() << "Hello" << std::endl;
+        }
+
+        HRESULT hr = SHGetFolderLocation(NULL, CSIDL_PROGRAM_FILES, NULL, 0, &pidlProgFiles);
+        hr = SHGetDesktopFolder(&psfDeskTop);
+
+        hr = psfDeskTop->BindToObject(pidlProgFiles, NULL, IID_IShellFolder, (LPVOID*)&psfProgFiles);
+        psfDeskTop->Release();
+
+        hr = psfProgFiles->EnumObjects(NULL, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &ppenum);
+
+
         context <<
-            PortableInstallImpl <<
-            ReportInstallerResult("Portable"sv, APPINSTALLER_CLI_ERROR_PORTABLE_INSTALL_FAILED, true);
+            PortableInstallImpl;
+        // create shell object for zip folder 
+        // extract contents from zip
+        // copy to folder 
+        // Set working directory and set installerPath
     }
 
     void MsixInstall(Execution::Context& context)

@@ -90,6 +90,9 @@ namespace AppInstaller::CLI::Workflow
     // Outputs: None
     void PortableInstall(Execution::Context& context);
 
+    // Runs the flow for installing a package from a zip archive.
+    void ZipInstall(Execution::Context& context);
+
     // Verifies parameters for install to ensure success.
     // Required Args: None
     // Inputs: 
