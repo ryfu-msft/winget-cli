@@ -110,7 +110,7 @@
         "RelativeFilePath": {
           "type": [ "string" ],
           "minLength": 1,
-          "maxLength": 100,
+          "maxLength": 260,
           "description": "The relative path to a nested installer file contained inside an archive."
         },
         "PortableCommandAlias": {
@@ -122,7 +122,7 @@
       },
       "maxItems": 16,
       "uniqueItems": true,
-      "description": "Nested installer file contained inside an archive file. Only one installer file object can be specified for a non-portable nested installer type."
+      "description": "Nested installer file contained inside an archive file. Exactly one installer file object should be specified for a non-portable nested installer type."
     },
     "InstallModes": {
       "type": [ "array", "null" ],
