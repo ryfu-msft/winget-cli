@@ -104,9 +104,25 @@
       ],
       "description": "Enumeration of supported nested installer types."
     },
-    "NestedInstallerFilePath": {
-      "type": [ "string", "null" ],
-      "description": "Relative path to the nested installer file contained inside an archive."
+    "NestedInstallerFile": {
+      "type": "object",
+      "properties": {
+        "RelativeFilePath": {
+          "type": [ "string" ],
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "The relative path to a nested installer file contained inside an archive."
+        },
+        "PortableCommandAlias": {
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 40,
+          "description":  "The command alias to to be used for calling the package. Only applies to a portable package."
+        }
+      },
+      "maxItems": 16,
+      "uniqueItems": true,
+      "description": "Nested installer file contained inside an archive file. Only one installer file object can be specified for a non-portable nested installer type."
     },
     "InstallModes": {
       "type": [ "array", "null" ],
@@ -515,8 +531,13 @@
         "NestedInstallerType": {
           "$ref": "#/definitions/NestedInstallerType"
         },
-        "NestedInstallerFilePath": {
-          "$ref": "#/definitions/NestedInstallerFilePath"
+        "NestedInstallerFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NestedInstallerFile"
+          },
+          "minItems": 1,
+          "maxItems": 16
         },
         "Scope": {
           "$ref": "#/definitions/Scope"
