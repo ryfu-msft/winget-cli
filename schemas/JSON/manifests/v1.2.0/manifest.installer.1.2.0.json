@@ -120,8 +120,6 @@
           "description": "The command alias to to be used for calling the package. Only applies to a portable package."
         }
       },
-      "maxItems": 16,
-      "uniqueItems": true,
       "description": "Nested installer file contained inside an archive file. Exactly one installer file object should be specified for a non-portable nested installer type."
     },
     "InstallModes": {
