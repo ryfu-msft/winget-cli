@@ -137,36 +137,43 @@
       "uniqueItems": true,
       "description": "List of supported installer modes"
     },
-    "Switch": {
-      "type": [ "string", "null" ],
-      "minLength": 1,
-      "maxLength": 512
-    },
     "InstallerSwitches": {
       "type": "object",
       "properties": {
         "Silent": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "Silent is the value that should be passed to the installer when user chooses a silent or quiet install"
         },
         "SilentWithProgress": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "SilentWithProgress is the value that should be passed to the installer when user chooses a non-interactive install"
         },
         "Interactive": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "Interactive is the value that should be passed to the installer when user chooses an interactive install"
         },
         "InstallLocation": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "InstallLocation is the value passed to the installer for custom install location. <INSTALLPATH> token can be included in the switch value so that winget will replace the token with user provided path"
         },
         "Log": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "Log is the value passed to the installer for custom log file path. <LOGPATH> token can be included in the switch value so that winget will replace the token with user provided path"
         },
         "Upgrade": {
-          "$ref": "#/definitions/Switch",
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "maxLength": 512,
           "description": "Upgrade is the value that should be passed to the installer when user chooses an upgrade"
         },
         "Custom": {
@@ -174,33 +181,6 @@
           "minLength": 1,
           "maxLength": 2048,
           "description": "Custom switches will be passed directly to the installer by winget"
-        }
-      }
-    },
-    "UninstallerSwitches": {
-      "type": "object",
-      "properties": {
-        "Silent": {
-          "$ref": "#/definitions/Switch",
-          "description": "Silent is the value that should be passed to the uninstaller when user chooses a silent or quiet uninstall"
-        },
-        "SilentWithProgress": {
-          "$ref": "#/definitions/Switch",
-          "description": "SilentWithProgress is the value that should be passed to the uninstaller when user chooses a non-interactive uninstall"
-        },
-        "Interactive": {
-          "$ref": "#/definitions/Switch",
-          "description": "Interactive is the value that should be passed to the uninstaller when user chooses an interactive uninstall"
-        },
-        "Log": {
-          "$ref": "#/definitions/Switch",
-          "description": "Log is the value passed to the uninstaller for custom log file path. <LOGPATH> token can be included in the switch value so that winget will replace the token with user provided path"
-        },
-        "Custom": {
-          "type": [ "string", "null" ],
-          "minLength": 1,
-          "maxLength": 2048,
-          "description": "Custom switches will be passed directly to the uninstaller by winget"
         }
       }
     },
@@ -222,15 +202,6 @@
       "maxItems": 16,
       "uniqueItems": true,
       "description": "List of additional non-zero installer success exit codes other than known default values by winget"
-    },
-    "UninstallerSuccessCodes": {
-      "type": [ "array", "null" ],
-      "items": {
-        "$ref": "#/definitions/InstallerReturnCode"
-      },
-      "maxItems": 16,
-      "uniqueItems": true,
-      "description": "List of additional non-zero uninstaller success exit codes other than known default values by winget"
     },
     "ExpectedReturnCodes": {
       "type": [ "array", "null" ],
@@ -346,12 +317,6 @@
               },
               "MinimumVersion": {
                 "$ref": "#/definitions/PackageVersion"
-              },
-              "Architecture": {
-                "$ref": "#/definitions/Architecture"
-              },
-              "Scope": {
-                "$ref": "#/definitions/Scope"
               }
             },
             "required": [ "PackageIdentifier" ]
@@ -464,7 +429,7 @@
       "type": [ "boolean", "null" ],
       "description": "Indicates whether winget should display a warning message if the install or upgrade is known to interfere with running applications."
     },
-    "InstallRebootRequired": {
+    "InstallRequiresReboot": {
       "type": [ "boolean", "null" ],
       "description": "Indicates whether the installer requires a reboot. Shows error warning to user and requires an explicit flag to proceed."
     },
@@ -525,25 +490,6 @@
         },
         "InstallerType": {
           "$ref": "#/definitions/InstallerType"
-        },
-        "HelpLink": {
-          "$ref": "#/definitions/Url",
-          "description": "The HelpLink registry value"
-        },
-        "URLInfoAbout": {
-          "$ref": "#/definitions/Url",
-          "description": "The URLInfoAbout registry value"
-        },
-        "URLUpdateInfo": {
-          "$ref": "#/definitions/Url",
-          "description": "The URLUpdateInfo registry value"
-        },
-        "EstimatedSize": {
-          "type": "integer",
-          "format": "long",
-          "minimum": 0,
-          "maximum": 4294967295,
-          "description": "The EstimatedSize registry value"
         }
       },
       "description": "Various key values under installer's ARP entry"
@@ -684,8 +630,7 @@
       "required": [
         "Architecture",
         "InstallerUrl",
-        "InstallerSha256",
-        "Scope"
+        "InstallerSha256"
       ]
     }
   },
@@ -723,12 +668,6 @@
     },
     "InstallerSuccessCodes": {
       "$ref": "#/definitions/InstallerSuccessCodes"
-    },
-    "UninstallerSwitches": {
-      "$ref": "#/definitions/UninstallerSwitches"
-    },
-    "UninstallerSuccessCodes": {
-      "$ref": "#/definitions/UninstallerSuccessCodes"
     },
     "ExpectedReturnCodes": {
       "$ref": "#/definitions/ExpectedReturnCodes"
@@ -787,8 +726,8 @@
     "DisplayInstallWarnings": {
       "$ref": "#/definitions/DisplayInstallWarnings"
     },
-    "InstallRebootRequired": {
-      "$ref": "#/definitions/InstallRebootRequired"
+    "InstallRequiresReboot": {
+      "$ref": "#/definitions/InstallRequiresReboot"
     },
     "Installers": {
       "type": "array",
