@@ -13,13 +13,17 @@
 #include <icu.h>
 #include <msi.h>
 #include <DbgHelp.h>
+#include <SoftPub.h>
+#include <WinTrust.h>
 
 #include "TraceLogging.h"
 
 #define YAML_DECLARE_STATIC
 #include <yaml.h>
 
-#include <json.h>
+// TODO: See if we can get down to having just one JSON parser...
+#include <json/json.h>
+#include <cpprest/json.h>
 
 #pragma warning( push )
 #pragma warning ( disable : 4458 4100 4702 6031 )

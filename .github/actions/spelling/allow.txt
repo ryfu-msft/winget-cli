@@ -58,9 +58,11 @@ cla
 CLASSNOTAVAILABLE
 CLSCTX
 cmake
+cmd
 cmdlet
 cmdlets
 cmp
+CMSG
 CNG
 cnt
 codepage
@@ -108,8 +110,8 @@ denelon
 depersist
 deque
 deserialize
-Deserialize
 deserializer
+deserializes
 deserializing
 dest
 devblogs
@@ -187,6 +189,9 @@ getline
 github
 githubusercontent
 globals
+HCCE
+hcertstore
+HCRYPTMSG
 hfile
 HGLOBAL
 HIDECANCEL
@@ -207,6 +212,7 @@ hstring
 html
 http
 https
+HWND
 Hyperlink
 IActivation
 IApplication
@@ -280,6 +286,7 @@ logsql
 logto
 LONGLONG
 LPCGUID
+LPCSTR
 LPVOID
 mailto
 MAJORVERSION
@@ -294,6 +301,7 @@ MContext
 mday
 memset
 metadata
+metadatas
 microsoft
 mimetype
 Minimatch
@@ -352,6 +360,7 @@ nuspec
 OAuth
 ODR
 ofstream
+Oid
 opencode
 opensource
 openxmlformats
@@ -383,6 +392,7 @@ PGP
 php
 PII
 pipssource
+PKCS
 placeholders
 png
 posix
@@ -494,6 +504,7 @@ src
 srwlock
 sscanf
 sstream
+STATEACTION
 STATFLAG
 STATSTG
 STDAPI
@@ -518,6 +529,7 @@ STRINGID
 STRINGIFY
 STRINGIZE
 stringstream
+STRSAFE
 strstr
 strtoll
 subcontext
@@ -630,6 +642,7 @@ wcout
 wcsicmp
 webpage
 wekyb
+WHOLECHAIN
 wil
 wildcards
 WINAPI
@@ -641,6 +654,7 @@ winmeta
 winres
 winrt
 winsqlite
+WINTRUST
 wix
 wmain
 WNS
@@ -655,6 +669,7 @@ wrl
 WStr
 wstring
 wstringstream
+WTD
 www
 xamarin
 xaml

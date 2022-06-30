@@ -3,6 +3,7 @@
 #pragma once
 #include <AppInstallerLogging.h>
 #include <AppInstallerProgress.h>
+#include <AppxPackaging.h>
 #include <winget/UserSettings.h>
 #include <wil/result.h>
 
@@ -130,4 +131,12 @@ namespace TestCommon
             m_settings[S].emplace<AppInstaller::Settings::details::SettingIndex(S)>(std::move(value));
         }
     };
+
+    // Below cert installation/uninstallation methods require admin privilege,
+    // tests calling these functions should skip when not running with admin.
+    bool InstallCertFromSignedPackage(const std::filesystem::path& package);
+    bool UninstallCertFromSignedPackage(const std::filesystem::path& package);
+
+    // Get manifest reader from a msix file path
+    bool GetMsixPackageManifestReader(std::string_view testFileName, IAppxManifestReader** manifestReader);
 }

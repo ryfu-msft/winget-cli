@@ -111,9 +111,6 @@
     <ClInclude Include="Public\winget\UserSettings.h">
       <Filter>Public\winget</Filter>
     </ClInclude>
-    <ClInclude Include="JsonUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Public\winget\ExperimentalFeature.h">
       <Filter>Public\winget</Filter>
     </ClInclude>
@@ -194,6 +191,15 @@
     </ClInclude>
     <ClInclude Include="Public\winget\PortableARPEntry.h">
       <Filter>Public\winget</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\winget\JsonUtil.h">
+      <Filter>Public\winget</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\winget\ManagedFile.h">
+      <Filter>Public\winget</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\winget\MsixManifest.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -336,6 +342,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PortableARPEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ManagedFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MsixManifest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
