@@ -200,6 +200,9 @@
     <ClCompile Include="MsixManifest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Archive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
@@ -444,6 +447,9 @@
     <CopyFileToFolders Include="TestData\TestSignedApp.msix">
       <Filter>TestData</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="TestData\TestZip.zip">
+      <Filter>TestData</Filter>
+    </CopyFileToFolders>    
     <CopyFileToFolders Include="TestData\InstallFlowTest_NoApplicableArchitecture.yaml">
       <Filter>TestData</Filter>
     </CopyFileToFolders>
