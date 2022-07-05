@@ -324,13 +324,23 @@ namespace AppInstaller::CLI::Workflow
     void ExtractInstallerFromArchive(Execution::Context& context)
     {
         const auto& installer = context.Get<Execution::Data::Installer>().value();
-        const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
-        const auto& installerParentPath = installerPath.parent_path();
 
-        if (installer.InstallerType == InstallerTypeEnum::Zip)
+        if (IsArchiveType(installer.InstallerType))
         {
+            const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
+            const auto& installerParentPath = installerPath.parent_path();
+
             context.SetFlags(Execution::ContextFlag::InstallerExtractedFromArchive);
-            AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
+
+
+            HRESULT hr = AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
+            THROW_HR_IF(hr, FAILED(hr));
+
+            if (!SUCCEEDED(hr))
+            {
+            }
+
+
             AICLI_LOG(CLI, Info, << "Successfully extracted archive");
 
             for (const auto& entry : installer.NestedInstallerFiles)
@@ -593,7 +603,6 @@ namespace AppInstaller::CLI::Workflow
         context <<
             Workflow::ReportExecutionStage(ExecutionStage::PreExecution) <<
             Workflow::SnapshotARPEntries <<
-            Workflow::ExtractInstallerFromArchive <<
             Workflow::ReportExecutionStage(ExecutionStage::Execution) <<
             Workflow::ExecuteInstaller <<
             Workflow::ReportExecutionStage(ExecutionStage::PostExecution) <<
@@ -619,6 +628,7 @@ namespace AppInstaller::CLI::Workflow
         context <<
             Workflow::CheckForUnsupportedArgs <<
             Workflow::DownloadSinglePackage <<
+            Workflow::ExtractInstallerFromArchive <<
             Workflow::InstallPackageInstaller;
     }
 

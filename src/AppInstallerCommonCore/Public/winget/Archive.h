@@ -6,5 +6,5 @@
 namespace AppInstaller::Archive
 {
     // Extracts the archive file to the specified path
-    void ExtractArchive(const std::filesystem::path& archivePath, const std::filesystem::path& destPath);
+    HRESULT ExtractArchive(const std::filesystem::path& archivePath, const std::filesystem::path& destPath);
 }

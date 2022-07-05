@@ -220,6 +220,8 @@ namespace AppInstaller
                 return "Organization policies are preventing installation. Contact your admin.";
             case APPINSTALLER_CLI_ERROR_INSTALL_DEPENDENCIES:
                 return "Failed to install package dependencies.";
+            case APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND:
+                return "The nested installer in the archive is not found.";
             default:
                 return "Unknown Error Code";
             }

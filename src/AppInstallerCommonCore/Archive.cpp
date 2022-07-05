@@ -4,7 +4,7 @@
 
 namespace AppInstaller::Archive
 {
-    void ExtractArchive(const std::filesystem::path& archivePath, const std::filesystem::path& destPath)
+    HRESULT ExtractArchive(const std::filesystem::path& archivePath, const std::filesystem::path& destPath)
     {
         IFileOperation* pfo;
         HRESULT hr = CoCreateInstance(CLSID_FileOperation, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pfo));
@@ -51,6 +51,6 @@ namespace AppInstaller::Archive
             CoUninitialize();
         }
 
-        THROW_HR_IF(hr, FAILED(hr));
+        return hr;
     }
 }
