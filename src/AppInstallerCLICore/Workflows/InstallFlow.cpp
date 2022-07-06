@@ -321,115 +321,21 @@ namespace AppInstaller::CLI::Workflow
         }
     }
 
-    void ExtractInstallerFromArchive(Execution::Context& context)
-    {
-        const auto& installer = context.Get<Execution::Data::Installer>().value();
-
-        if (IsArchiveType(installer.InstallerType))
-        {
-            const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
-            const auto& installerParentPath = installerPath.parent_path();
-
-            context.SetFlags(Execution::ContextFlag::InstallerExtractedFromArchive);
-
-
-            HRESULT hr = AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
-            THROW_HR_IF(hr, FAILED(hr));
-
-            if (!SUCCEEDED(hr))
-            {
-            }
-
-
-            AICLI_LOG(CLI, Info, << "Successfully extracted archive");
-
-            for (const auto& entry : installer.NestedInstallerFiles)
-            {
-                std::filesystem::path nestedInstallerPath = installerParentPath / entry.RelativeFilePath;
-
-                if (!std::filesystem::exists(nestedInstallerPath))
-                {
-                    AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
-                    AICLI_TERMINATE_CONTEXT(APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND);
-                }
-            }
-
-            if (installer.NestedInstallerType == InstallerTypeEnum::Portable)
-            {
-                AICLI_TERMINATE_CONTEXT(ERROR_NOT_SUPPORTED);
-            }
-            else
-            {
-                AICLI_LOG(CLI, Info, << "Setting installer path to: " << nestedInstallerPath);
-                context.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
-            }
-        }
-    }
-
     void ExecuteInstaller(Execution::Context& context)
     {
         const auto& installer = context.Get<Execution::Data::Installer>().value();
 
         bool isUpdate = WI_IsFlagSet(context.GetFlags(), Execution::ContextFlag::InstallerExecutionUseUpdate);
 
-        InstallerTypeEnum installerType = installer.InstallerType;
-        if (installerType == InstallerTypeEnum::Zip)
+        InstallerTypeEnum installerType;
+
+        if (WI_IsFlagSet(context.GetFlags(), Execution::ContextFlag::InstallerExtractedFromArchive))
         {
-            context <<
-                ExtractInstallerFromArchive;
-
             installerType = installer.NestedInstallerType;
-
-
-            const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
-            const auto& installerParentPath = installerPath.parent_path();
-            AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
-
-            // Verify if all relative file path entries point to a valid installer
-            for (const auto& entry.RelativeFilePath : installer.NestedInstallerFiles)
-            {
-                std::filesystem::path nestedInstallerPath = installerParentPath / relativeFilePath;
-
-                if (!std::filesystem::exists(nextedInstallerPath))
-                {
-                    AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
-                    AICLI_TERMINATE_CONTEXT(ERROR_NOT_SUPPORTED);
-                }
-            }
-
-            /*
-            // This checks if the nested installer type is not a portable installerType
-            // If so, we can modify the installerPath to point directly to the installer contained inside the archive.
-
-
-            if (installer.NestedInstallerType != InstallerTypeEnum::Portable)
-            {
-                std::filesystem::path relativeFilePath = installer.NestedInstallerFiles[0].RelativeFilePath;
-                std::filesystem::path nestedInstallerPath = installerParentPath / relativeFilePath;
-
-                if (!std::filesystem::exists(nestedInstallerPath))
-                {
-                    // throw exception here because the path does not exist
-                }
-
-                AICLI_LOG(CLI, Info, << "Setting installer path to: " << nestedInstallerPath);
-                context.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
-            }
-            else
-            {
-                // throw error here as we do not currently support nested portables.
-            }
-
-            installerType = installer.NestedInstallerType;          
-            */
-
-            std::filesystem::path relativeFilePath{ "paint.net.4.3.11.install.anycpu.web.exe" };
-            std::filesystem::path nestedInstallerPath = installerParentPath / relativeFilePath;
-
-            AICLI_LOG(CLI, Info, << "Setting installer path to: " << nestedInstallerPath);
-            context.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
-            InstallerTypeEnum nestedInstallerType = InstallerTypeEnum::Exe;
-            installerType = nestedInstallerType;
+        }
+        else
+        {
+            installerType = installer.InstallerType;
         }
 
         switch (installerType)
@@ -474,8 +380,65 @@ namespace AppInstaller::CLI::Workflow
             }
             context << PortableInstall;
             break;
+        case InstallerTypeEnum::Zip:
+            context << ZipInstall;
+            break;
         default:
             THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+        }
+    }
+
+    void ZipInstall(Execution::Context& context)
+    {
+        const auto& installer = context.Get<Execution::Data::Installer>().value();
+        const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
+        const auto& installerParentPath = installerPath.parent_path();
+
+        HRESULT hr = AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
+
+        if (SUCCEEDED(hr))
+        {
+            AICLI_LOG(CLI, Info, << "Successfully extracted archive");
+        }
+        else
+        {
+            context.Add<Execution::Data::OperationReturnCode>(hr);
+            context << ReportInstallerResult("Zip"sv, hr, /* isHResult */ true);
+            return;
+        }
+
+        for (const auto& entry : installer.NestedInstallerFiles)
+        {
+            std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(entry.RelativeFilePath);
+
+            if (!std::filesystem::exists(nestedInstallerPath))
+            {
+                AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
+                AICLI_TERMINATE_CONTEXT(APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND);
+            }
+        }
+
+        for (const auto& entry : installer.NestedInstallerFiles)
+        {
+            auto zipInstallContextPtr = context.CreateSubContext();
+            Execution::Context& zipInstallContext = *zipInstallContextPtr;
+            auto previousThreadGlobals = zipInstallContext.SetForCurrentThread();
+            std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(entry.RelativeFilePath);
+
+            // May need to rename the installer file here based on the portable command alias.
+            AppInstaller::Manifest::ManifestInstaller installerCopy = installer;
+            
+            if (!entry.PortableCommandAlias.empty())
+            {
+                installerCopy.Commands.insert(installerCopy.Commands.begin(), entry.PortableCommandAlias);
+            }
+
+            // is set update flag if present
+            zipInstallContext.SetFlags(Execution::ContextFlag::InstallerExtractedFromArchive);
+            zipInstallContext.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
+            zipInstallContext.Add<Execution::Data::Installer>(installerCopy);
+            zipInstallContext.Add<Execution::Data::Manifest>(context.Get<Execution::Data::Manifest>());
+            zipInstallContext << ExecuteInstaller;
         }
     }
 
@@ -628,7 +591,6 @@ namespace AppInstaller::CLI::Workflow
         context <<
             Workflow::CheckForUnsupportedArgs <<
             Workflow::DownloadSinglePackage <<
-            Workflow::ExtractInstallerFromArchive <<
             Workflow::InstallPackageInstaller;
     }
 
