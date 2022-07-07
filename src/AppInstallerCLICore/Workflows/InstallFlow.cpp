@@ -381,14 +381,20 @@ namespace AppInstaller::CLI::Workflow
             context << PortableInstall;
             break;
         case InstallerTypeEnum::Zip:
-            context << ZipInstall;
+            context << ArchiveInstall;
             break;
         default:
             THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
         }
     }
 
-    void ZipInstall(Execution::Context& context)
+    // Three methods
+    // 1. ExtractInstallerFromArchive
+    // 2. EnsureSupportForZipInstall
+    // 3. ArchiveInstall
+    // 4. ArchiveInstallPortable
+
+    void ArchiveInstall(Execution::Context& context)
     {
         const auto& installer = context.Get<Execution::Data::Installer>().value();
         const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
@@ -399,46 +405,29 @@ namespace AppInstaller::CLI::Workflow
         if (SUCCEEDED(hr))
         {
             AICLI_LOG(CLI, Info, << "Successfully extracted archive");
+
+            if (installer.NestedInstallerType != InstallerTypeEnum::Portable) // This can also be removed if we refactor the processes for portable and non portable
+            {
+                // This is no longer needed if we use a separate function to verify support.
+                std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(installer.NestedInstallerFiles[0].RelativeFilePath);
+                if (!std::filesystem::exists(nestedInstallerPath))
+                {
+                    AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
+                    hr = APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND;
+                    context.Add<Execution::Data::OperationReturnCode>(hr);
+                    context << ReportInstallerResult("Zip"sv, hr, /* isHResult*/ true);
+                    return;
+                }
+
+                context.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
+                context << ExecuteInstaller;
+            }
         }
         else
         {
+            AICLI_LOG(CLI, Info, << "Failed to extract archive");
             context.Add<Execution::Data::OperationReturnCode>(hr);
-            context << ReportInstallerResult("Zip"sv, hr, /* isHResult */ true);
-            return;
-        }
-
-        for (const auto& entry : installer.NestedInstallerFiles)
-        {
-            std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(entry.RelativeFilePath);
-
-            if (!std::filesystem::exists(nestedInstallerPath))
-            {
-                AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
-                AICLI_TERMINATE_CONTEXT(APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND);
-            }
-        }
-
-        for (const auto& entry : installer.NestedInstallerFiles)
-        {
-            auto zipInstallContextPtr = context.CreateSubContext();
-            Execution::Context& zipInstallContext = *zipInstallContextPtr;
-            auto previousThreadGlobals = zipInstallContext.SetForCurrentThread();
-            std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(entry.RelativeFilePath);
-
-            // May need to rename the installer file here based on the portable command alias.
-            AppInstaller::Manifest::ManifestInstaller installerCopy = installer;
-            
-            if (!entry.PortableCommandAlias.empty())
-            {
-                installerCopy.Commands.insert(installerCopy.Commands.begin(), entry.PortableCommandAlias);
-            }
-
-            // is set update flag if present
-            zipInstallContext.SetFlags(Execution::ContextFlag::InstallerExtractedFromArchive);
-            zipInstallContext.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
-            zipInstallContext.Add<Execution::Data::Installer>(installerCopy);
-            zipInstallContext.Add<Execution::Data::Manifest>(context.Get<Execution::Data::Manifest>());
-            zipInstallContext << ExecuteInstaller;
+            context << ReportInstallerResult("Zip"sv, hr, /* isHResult*/ true);
         }
     }
 
@@ -597,7 +586,8 @@ namespace AppInstaller::CLI::Workflow
     void EnsureSupportForInstall(Execution::Context& context)
     {
         context <<
-            Workflow::EnsureSupportForPortableInstall;
+            Workflow::EnsureSupportForPortableInstall <<
+            Workflow::EnsureNonPortableTypeForArchiveInstall;
     }
 
     void InstallMultiplePackages::operator()(Execution::Context& context) const

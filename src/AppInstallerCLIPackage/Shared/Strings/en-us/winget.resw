@@ -1358,4 +1358,7 @@ Please specify one of them using the `--source` option to proceed.</value>
   <data name="UnsupportedArgument" xml:space="preserve">
     <value>A provided argument is not supported for this package</value>
   </data>
+  <data name="PortableInstallFromArchiveNotSupported" xml:space="preserve">
+    <value>Installing a portable package from an archive is not yet supported</value>
+  </data>
 </root>

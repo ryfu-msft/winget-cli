@@ -178,7 +178,7 @@
     </ClInclude>
     <ClInclude Include="Workflows\PortableFlow.h">
       <Filter>Workflows</Filter>
-    </ClInclude>
+    </ClInclude>  
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -324,7 +324,7 @@
     </ClCompile>
     <ClCompile Include="Workflows\PortableFlow.cpp">
       <Filter>Workflows</Filter>
-    </ClCompile>
+    </ClCompile>    
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
