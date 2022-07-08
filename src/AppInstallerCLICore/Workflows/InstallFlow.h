@@ -104,7 +104,7 @@ namespace AppInstaller::CLI::Workflow
 
     // Runs the flow for installing a package from an archive.
     // Required Args: None
-    // Inputs: Intsaller, InstallerPath, Manifest
+    // Inputs: Installer, InstallerPath, Manifest
     // Outputs: None
     void ArchiveInstall(Execution::Context& context);
 

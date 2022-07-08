@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 #include "pch.h"
-#include <comdef.h>
 
 namespace AppInstaller::Archive
 {
@@ -37,7 +36,7 @@ namespace AppInstaller::Archive
                                 {
                                     IShellItem* pShellItemFrom;
                                     STRRET strFolderName;
-                                    TCHAR szFolderName[MAX_PATH];
+                                    WCHAR szFolderName[MAX_PATH];
                                     if ((pArchiveShellFolder->GetDisplayNameOf(pidlChild, SHGDN_INFOLDER, &strFolderName) == S_OK) &&
                                         (StrRetToBuf(&strFolderName, pidlChild, szFolderName, MAX_PATH) == S_OK))
                                     {
