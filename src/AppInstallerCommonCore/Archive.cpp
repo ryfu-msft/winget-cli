@@ -1,54 +1,67 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 #include "pch.h"
+#include <comdef.h>
 
 namespace AppInstaller::Archive
 {
     HRESULT ExtractArchive(const std::filesystem::path& archivePath, const std::filesystem::path& destPath)
     {
-        IFileOperation* pfo;
-        HRESULT hr = CoCreateInstance(CLSID_FileOperation, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pfo));
+        IFileOperation* pFileOperation;
+        HRESULT hr = CoCreateInstance(CLSID_FileOperation, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pFileOperation));
 
         if (SUCCEEDED(hr))
         {
-            // Turn off all UI from being shown to the user during the operation.
-            pfo->SetOperationFlags(FOF_NO_UI);
-
-            // Create IShellItem from destination path
-            IShellItem* psiTo = NULL;
-            hr = SHCreateItemFromParsingName(destPath.c_str(), NULL, IID_PPV_ARGS(&psiTo));
-
+            hr = pFileOperation->SetOperationFlags(FOF_NO_UI);
             if (SUCCEEDED(hr))
             {
-                LPITEMIDLIST pidl; // pointer to an item id list
-                IShellItem* psiFrom;
-                IShellFolder* psf;
-                IEnumIDList* pEnum;
-                HRESULT result = SHParseDisplayName(archivePath.c_str(), NULL, &pidl, 0, NULL);
-                result = SHBindToObject(NULL, pidl, NULL, IID_PPV_ARGS(&psf));
-                result = psf->EnumObjects(nullptr, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &pEnum);
-
-                LPITEMIDLIST pidlItem = NULL;
-                ULONG nFetched;
-                while (pEnum->Next(1, &pidlItem, &nFetched) == S_OK && nFetched == 1)
+                IShellItem* pShellItemTo;
+                hr = SHCreateItemFromParsingName(destPath.c_str(), NULL, IID_PPV_ARGS(&pShellItemTo));
+                if (SUCCEEDED(hr))
                 {
-                    STRRET strFolderName;
-                    TCHAR szFolderName[MAX_PATH];
-                    if ((psf->GetDisplayNameOf(pidlItem, SHGDN_INFOLDER, &strFolderName) == S_OK) &&
-                        (StrRetToBuf(&strFolderName, pidlItem, szFolderName, MAX_PATH) == S_OK))
+                    PIDLIST_ABSOLUTE pidlParent;
+                    IShellFolder* pArchiveShellFolder;
+                    IEnumIDList* pEnumIdList;
+                    hr = SHParseDisplayName(archivePath.c_str(), NULL, &pidlParent, 0, NULL);
+                    if (SUCCEEDED(hr))
                     {
-                        hr = SHCreateItemWithParent(NULL, psf, pidlItem, IID_PPV_ARGS(&psiFrom));
-                        pfo->CopyItem(psiFrom, psiTo, NULL, NULL);
+                        hr = SHBindToObject(NULL, pidlParent, NULL, IID_PPV_ARGS(&pArchiveShellFolder));
+                        if (SUCCEEDED(hr))
+                        {
+                            hr = pArchiveShellFolder->EnumObjects(nullptr, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS, &pEnumIdList);
+                            if (SUCCEEDED(hr))
+                            {
+                                LPITEMIDLIST pidlChild;
+                                ULONG nFetched;
+                                while (hr == S_OK && pEnumIdList->Next(1, &pidlChild, &nFetched) == S_OK && nFetched == 1)
+                                {
+                                    IShellItem* pShellItemFrom;
+                                    STRRET strFolderName;
+                                    TCHAR szFolderName[MAX_PATH];
+                                    if ((pArchiveShellFolder->GetDisplayNameOf(pidlChild, SHGDN_INFOLDER, &strFolderName) == S_OK) &&
+                                        (StrRetToBuf(&strFolderName, pidlChild, szFolderName, MAX_PATH) == S_OK))
+                                    {
+                                        hr = SHCreateItemWithParent(pidlParent, pArchiveShellFolder, pidlChild, IID_PPV_ARGS(&pShellItemFrom));
+                                        if (SUCCEEDED(hr))
+                                        {
+                                            hr = pFileOperation->CopyItem(pShellItemFrom, pShellItemTo, NULL, NULL);
+                                        }
+                                        pShellItemFrom->Release();
+                                    }
+                                    ILFree(pidlChild);
+                                }
+
+                                hr = pFileOperation->PerformOperations();
+                                pEnumIdList->Release();
+                            }
+                            pArchiveShellFolder->Release();
+                        }
+                        ILFree(pidlParent);
                     }
-                    ILFree(pidlItem);
+                    pShellItemTo->Release();
                 }
-
-                hr = pfo->PerformOperations();
-                psiTo->Release();
-                pfo->Release();
             }
-
-            CoUninitialize();
+            pFileOperation->Release();
         }
 
         return hr;

@@ -284,6 +284,9 @@
     <CopyFileToFolders Include="TestData\InstallFlowTest_UnsupportedArguments.yaml">
       <DeploymentContent>true</DeploymentContent>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="TestData\InstallFlowTest_ZipWithExe.yaml">
+      <DeploymentContent>true</DeploymentContent>
+    </CopyFileToFolders>    
     <CopyFileToFolders Include="TestData\ImportFile-Bad-Invalid.json">
       <DeploymentContent>true</DeploymentContent>
     </CopyFileToFolders>
@@ -605,6 +608,9 @@
     <CopyFileToFolders Include="TestData\UpdateFlowTest_Portable.yaml">
       <DeploymentContent>true</DeploymentContent>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="TestData\UpdateFlowTest_ZipWithExe.yaml">
+      <DeploymentContent>true</DeploymentContent>
+    </CopyFileToFolders>    
     <CopyFileToFolders Include="TestData\InputNames.txt">
       <DeploymentContent>true</DeploymentContent>
     </CopyFileToFolders>

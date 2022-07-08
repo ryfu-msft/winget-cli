@@ -9,6 +9,7 @@
 #include "ShellExecuteInstallerHandler.h"
 #include "MSStoreInstallerHandler.h"
 #include "MsiInstallFlow.h"
+#include "ArchiveFlow.h"
 #include "PortableFlow.h"
 #include "WorkflowBase.h"
 #include "Workflows/DependenciesFlow.h"
@@ -17,10 +18,6 @@
 #include <winget/Archive.h>
 #include <Argument.h>
 #include <Command.h>
-
-//Adding this headers
-#include <shlobj.h>
-#include <shlwapi.h>
 
 using namespace winrt::Windows::ApplicationModel::Store::Preview::InstallControl;
 using namespace winrt::Windows::Foundation;
@@ -388,47 +385,12 @@ namespace AppInstaller::CLI::Workflow
         }
     }
 
-    // Three methods
-    // 1. ExtractInstallerFromArchive
-    // 2. EnsureSupportForZipInstall
-    // 3. ArchiveInstall
-    // 4. ArchiveInstallPortable
-
     void ArchiveInstall(Execution::Context& context)
     {
-        const auto& installer = context.Get<Execution::Data::Installer>().value();
-        const auto& installerPath = context.Get<Execution::Data::InstallerPath>();
-        const auto& installerParentPath = installerPath.parent_path();
-
-        HRESULT hr = AppInstaller::Archive::ExtractArchive(installerPath, installerParentPath);
-
-        if (SUCCEEDED(hr))
-        {
-            AICLI_LOG(CLI, Info, << "Successfully extracted archive");
-
-            if (installer.NestedInstallerType != InstallerTypeEnum::Portable) // This can also be removed if we refactor the processes for portable and non portable
-            {
-                // This is no longer needed if we use a separate function to verify support.
-                std::filesystem::path nestedInstallerPath = installerParentPath / ConvertToUTF16(installer.NestedInstallerFiles[0].RelativeFilePath);
-                if (!std::filesystem::exists(nestedInstallerPath))
-                {
-                    AICLI_LOG(CLI, Error, << "Unable to locate nested installer at: " << nestedInstallerPath);
-                    hr = APPINSTALLER_CLI_ERROR_NESTEDINSTALLER_NOT_FOUND;
-                    context.Add<Execution::Data::OperationReturnCode>(hr);
-                    context << ReportInstallerResult("Zip"sv, hr, /* isHResult*/ true);
-                    return;
-                }
-
-                context.Add<Execution::Data::InstallerPath>(nestedInstallerPath);
-                context << ExecuteInstaller;
-            }
-        }
-        else
-        {
-            AICLI_LOG(CLI, Info, << "Failed to extract archive");
-            context.Add<Execution::Data::OperationReturnCode>(hr);
-            context << ReportInstallerResult("Zip"sv, hr, /* isHResult*/ true);
-        }
+        context <<
+            ExtractInstallerFromArchive <<
+            VerifyAndSetNestedInstaller <<
+            ExecuteInstaller;
     }
 
     void ShellExecuteInstall(Execution::Context& context)
