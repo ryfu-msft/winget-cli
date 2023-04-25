@@ -352,7 +352,7 @@ jobs:
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
     displayName: 'Publish Security Analysis Logs'
 
-- job: 'BuildPowerShellModule'
+- job: 'BuildPowerShellModules'
   timeoutInMinutes: 120
   dependsOn: 'Build'
   condition: always()
@@ -374,6 +374,13 @@ jobs:
       SourceFolder: '$(Pipeline.Workspace)\Build.x86release\PowerShell'
       Contents: '**\*'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Microsoft.WinGet.DSC Module Files to Output'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\PowerShell\Microsoft.WinGet.DSC'
+      Contents: '**\*'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\Microsoft.WinGet.DSC'
 
   - task: PublishPipelineArtifact@1
     displayName: Publish PowerShell Module Artifacts
