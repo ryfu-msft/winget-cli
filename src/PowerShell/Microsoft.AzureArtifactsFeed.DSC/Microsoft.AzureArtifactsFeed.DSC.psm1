@@ -29,16 +29,15 @@ class AzureDevOpsFeed
     [AzureDevOpsFeed] Get()
     {
         $currentState = [AzureDevOpsFeed]::new()
-
         $currentState.RepositoryName = $this.RepositoryName
         $currentState.SourceLocationUri = $this.SourceLocationUri
         $currentState.Ensure = [Ensure]::Absent
         $currentState.Trusted = $this.Trusted
 
-        $registeredRepository = Get-PSRepository -Name $this.RepositoryName
-        if ($null -ne $registeredRepository)
+        $match = Find-PSRepository -Name $currentState.RepositoryName
+        if ($null -ne $match)
         {
-            if ($registeredRepository.SourceLocation -eq $currentState.SourceLocationUri -and $registeredRepository.Trusted -eq $currentState.Trusted)
+            if (($match.SourceLocation -eq $currentState.SourceLocationUri) -and ($match.Trusted -eq $currentState.Trusted))
             {
                 $currentState.Ensure = [Ensure]::Present
             }
@@ -56,15 +55,27 @@ class AzureDevOpsFeed
     [void] Set()
     {
         $inDesiredState = $this.Test()
-        if ($inDesiredState -eq $false)
+        if (-not $inDesiredState)
         {
             if ($this.Ensure -eq [Ensure]::Present)
             {
-                $registeredRepository = Get-PSRepository -Name $this.RepositoryName
-                if ($null -eq $registeredRepository)
+
+                # Unregister repository if one with the same name already exists.
+                $match = Find-PSRepository -Name $this.RepositoryName
+                if ($null -ne $match)
                 {
-                    Unregister-PSRepository -Name $this.RepositoryName
-                }             
+                    Unregister-PSRepository -Name $this.RepositoryName         
+                }
+
+                # Unregister package source if one with the same name already exists.
+                $packageSource = Find-PackageSource -Name $this.RepositoryName
+                if ($null -ne $packageSource)
+                {
+                    Unregister-PackageSource -Name $this.RepositoryName -ProviderName Nuget
+                }
+
+                # Set environment variable to cache ADAL session token.
+                $env:NUGET_CREDENTIALPROVIDER_ADAL_FILECACHE_ENABLED = $true
 
                 Assert-AzureCredentialProvider -UseNuget $this.UseNuget
                 Invoke-AzureCredentialProvider -PackageSourceUri $this.SourceLocationUri -UseNuget $this.UseNuget
@@ -75,8 +86,10 @@ class AzureDevOpsFeed
                 }
                 else
                 {
-                    Register-PSRepository -Name $this.RepositoryName -SourceLocation $this.SourceLocationUri -InstallationPolicy Untrusted
+                    Register-PSRepository -Name $this.RepositoryName -SourceLocation $this.SourceLocationUri
                 }
+
+                Register-PackageSource -Name $this.RepositoryName -Location $this.SourceLocationUri -ProviderName NuGet -Trusted -SkipValidate
             }
             else
             {
@@ -127,11 +140,29 @@ function Invoke-AzureCredentialProvider
 
     if ($UseNuget)
     {
-        Start-Process -FilePath $AzureCredentialProviderNetFx -ArgumentList "-C -U $PackageSourceUri -IsRetry"
+        Invoke-Expression -Command "& { $AzureCredentialProviderNetFx -C -U $PackageSourceUri -IsRetry }"
     }
     else
     {
-        Start-Process -FilePath $AzureCredentialProviderNetCore -ArgumentList "-C -U $PackageSourceUri -IsRetry"
+        Invoke-Expression -Command "& { $AzureCredentialProviderNetCore -C -U $PackageSourceUri -IsRetry }"
     }
+}
+
+function Find-PSRepository
+{
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+    return Get-PSRepository | Where-Object {$_.Name -eq $Name}
+}
+
+function Find-PackageSource
+{
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+    return Get-PackageSource | Where-Object {$_.Name -eq $Name}
 }
 #endregion Functions
