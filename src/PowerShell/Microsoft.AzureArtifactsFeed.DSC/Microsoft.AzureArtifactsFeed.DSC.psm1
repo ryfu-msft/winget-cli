@@ -18,7 +18,7 @@ class AzureDevOpsFeed
     [string] $SourceLocationUri
 
     [DscProperty()]
-    [bool] $Trusted = $false
+    [bool] $Trusted = $true
 
     [DscProperty()]
     [bool] $UseNuget = $false
@@ -59,17 +59,18 @@ class AzureDevOpsFeed
         {
             if ($this.Ensure -eq [Ensure]::Present)
             {
+                Assert-DotNetVersion
 
                 # Unregister repository if one with the same name already exists.
-                $match = Find-PSRepository -Name $this.RepositoryName
-                if ($null -ne $match)
+                $repositoryMatch = Find-PSRepository -Name $this.RepositoryName
+                if ($null -ne $repositoryMatch)
                 {
                     Unregister-PSRepository -Name $this.RepositoryName         
                 }
 
                 # Unregister package source if one with the same name already exists.
-                $packageSource = Find-PackageSource -Name $this.RepositoryName
-                if ($null -ne $packageSource)
+                $packageSourceMatch = Find-PackageSource -Name $this.RepositoryName
+                if ($null -ne $packageSourceMatch)
                 {
                     Unregister-PackageSource -Name $this.RepositoryName -ProviderName Nuget
                 }
@@ -83,13 +84,13 @@ class AzureDevOpsFeed
                 if ($this.Trusted)
                 {
                     Register-PSRepository -Name $this.RepositoryName -SourceLocation $this.SourceLocationUri -InstallationPolicy Trusted
+                    Register-PackageSource -Name $this.RepositoryName -Location $this.SourceLocationUri -ProviderName NuGet -Trusted -SkipValidate
                 }
                 else
                 {
                     Register-PSRepository -Name $this.RepositoryName -SourceLocation $this.SourceLocationUri
+                    Register-PackageSource -Name $this.RepositoryName -Location $this.SourceLocationUri -ProviderName NuGet -SkipValidate
                 }
-
-                Register-PackageSource -Name $this.RepositoryName -Location $this.SourceLocationUri -ProviderName NuGet -Trusted -SkipValidate
             }
             else
             {
@@ -104,6 +105,24 @@ class AzureDevOpsFeed
 #region Functions
 $AzureCredentialProviderNetCore = "$env:USERPROFILE\.nuget\plugins\netcore\CredentialProvider.Microsoft\CredentialProvider.Microsoft.exe"
 $AzureCredentialProviderNetFx = "$env:USERPROFILE\.nuget\plugins\netfx\CredentialProvider.Microsoft\CredentialProvider.Microsoft.exe"
+
+function Assert-DotNetVersion
+{
+    $dotnetVersion = $null
+    try
+    {
+        $dotnetVersion = Invoke-Expression -Command 'dotnet --version'
+    }
+    catch
+    {
+        throw "dotnet SDK is not installed. Visit https://dotnet.microsoft.com/en-us/download to install the latest dotnet SDK."
+    }
+
+    if ([System.Version]$dotnetVersion -lt [System.Version]'6.0')
+    {
+        throw "dotnet SDK v6.0.x is required."
+    }
+}
 
 function Assert-AzureCredentialProvider
 {
@@ -140,11 +159,11 @@ function Invoke-AzureCredentialProvider
 
     if ($UseNuget)
     {
-        Invoke-Expression -Command "& { $AzureCredentialProviderNetFx -C -U $PackageSourceUri -IsRetry }"
+        Start-Process -FilePath $AzureCredentialProviderNetFx -ArgumentList "-C -U $PackageSourceUri -IsRetry" -Wait
     }
     else
     {
-        Invoke-Expression -Command "& { $AzureCredentialProviderNetCore -C -U $PackageSourceUri -IsRetry }"
+        Start-Process -FilePath $AzureCredentialProviderNetCore -ArgumentList "-C -U $PackageSourceUri -IsRetry" -Wait
     }
 }
 
