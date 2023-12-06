@@ -8,7 +8,7 @@ namespace Microsoft.WinGet.Client.Commands.Common
 {
     using System.IO;
     using System.Management.Automation;
-    using Microsoft.WinGet.Client.PSObjects;
+    using Microsoft.WinGet.Client.Engine.PSObjects;
 
     /// <summary>
     /// This is the base class for all commands that parse a FindPackagesOptions result
@@ -23,6 +23,18 @@ namespace Microsoft.WinGet.Client.Commands.Common
         /// </summary>
         [Parameter(ValueFromPipelineByPropertyName = true)]
         public PSPackageInstallMode Mode { get; set; } = PSPackageInstallMode.Default;
+
+        /// <summary>
+        /// Gets or sets the scope to install the application under.
+        /// </summary>
+        [Parameter(ValueFromPipelineByPropertyName = true)]
+        public PSPackageInstallScope Scope { get; set; } = PSPackageInstallScope.Any;
+
+        /// <summary>
+        /// Gets or sets the installer type of the application to be installed.
+        /// </summary>
+        [Parameter(ValueFromPipelineByPropertyName = true)]
+        public PSPackageInstallerType InstallerType { get; set; } = PSPackageInstallerType.Unknown;
 
         /// <summary>
         /// Gets or sets the override arguments to be passed on to the installer.

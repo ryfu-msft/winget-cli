@@ -24,6 +24,8 @@ namespace Microsoft.WinGet.Client.Engine.Commands
         /// Initializes a new instance of the <see cref="InstallerPackageCommand"/> class.
         /// </summary>
         /// <param name="psCmdlet">Caller cmdlet.</param>
+        /// <param name="scope">Installer scope.</param>
+        /// <param name="installerType">Installer type.</param>
         /// <param name="override">Override arguments to be passed on to the installer.</param>
         /// <param name="custom">Additional arguments.</param>
         /// <param name="location">Installation location.</param>
@@ -40,6 +42,8 @@ namespace Microsoft.WinGet.Client.Engine.Commands
         /// <param name="query">Match against any field of a package.</param>
         public InstallerPackageCommand(
             PSCmdlet psCmdlet,
+            PSPackageInstallScope scope,
+            PSPackageInstallerType installerType,
             string @override,
             string custom,
             string location,
@@ -57,6 +61,8 @@ namespace Microsoft.WinGet.Client.Engine.Commands
             : base(psCmdlet)
         {
             // InstallCommand.
+            this.Scope = scope;
+            this.InstallerType = installerType;
             this.Override = @override;
             this.Custom = custom;
             this.Location = location;
@@ -84,12 +90,10 @@ namespace Microsoft.WinGet.Client.Engine.Commands
         /// <summary>
         /// Process install package command.
         /// </summary>
-        /// <param name="psPackageInstallScope">PSPackageInstallScope.</param>
         /// <param name="psProcessorArchitecture">PSProcessorArchitecture.</param>
         /// <param name="psPackageFieldMatchOption">PSPackageFieldMatchOption.</param>
         /// <param name="psPackageInstallMode">PSPackageInstallMode.</param>
         public void Install(
-            string psPackageInstallScope,
             string psProcessorArchitecture,
             string psPackageFieldMatchOption,
             string psPackageInstallMode)
@@ -106,8 +110,6 @@ namespace Microsoft.WinGet.Client.Engine.Commands
                             options.AllowedArchitectures.Clear();
                             options.AllowedArchitectures.Add(PSEnumHelpers.ToProcessorArchitecture(psProcessorArchitecture));
                         }
-
-                        options.PackageInstallScope = PSEnumHelpers.ToPackageInstallScope(psPackageInstallScope);
 
                         return await this.InstallPackageAsync(package, options);
                     }));

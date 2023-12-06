@@ -9,7 +9,7 @@ namespace Microsoft.WinGet.Client.Engine.Commands.Common
     using System.Management.Automation;
     using Microsoft.Management.Deployment;
     using Microsoft.WinGet.Client.Engine.Helpers;
-    using Windows.Foundation;
+    using Microsoft.WinGet.Client.Engine.PSObjects;
 
     /// <summary>
     /// This is the base class for all commands that parse a <see cref="FindPackagesOptions" /> result
@@ -25,6 +25,16 @@ namespace Microsoft.WinGet.Client.Engine.Commands.Common
             : base(psCmdlet)
         {
         }
+
+        /// <summary>
+        /// Gets or sets the installer scope.
+        /// </summary>
+        protected PSPackageInstallScope Scope { get; set; } = PSPackageInstallScope.Any;
+
+        /// <summary>
+        /// Gets or sets the installer type.
+        /// </summary>
+        protected PSPackageInstallerType InstallerType { get; set; } = PSPackageInstallerType.Unknown;
 
         /// <summary>
         /// Gets or sets the override arguments to be passed on to the installer.
@@ -100,6 +110,16 @@ namespace Microsoft.WinGet.Client.Engine.Commands.Common
             if (this.Header != null)
             {
                 options.AdditionalPackageCatalogArguments = this.Header;
+            }
+
+            if (this.Scope != PSPackageInstallScope.Any)
+            {
+                options.PackageInstallScope = PSEnumHelpers.ToPackageInstallScope(this.Scope.ToString());
+            }
+
+            if (this.InstallerType != PSPackageInstallerType.Unknown)
+            {
+                options.InstallerType = PSEnumHelpers.ToPackageInstallerType(this.InstallerType.ToString());
             }
 
             return options;

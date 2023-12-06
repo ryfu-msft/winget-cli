@@ -11,7 +11,6 @@ namespace Microsoft.WinGet.Client.Commands
     using Microsoft.WinGet.Client.Common;
     using Microsoft.WinGet.Client.Engine.Commands;
     using Microsoft.WinGet.Client.Engine.PSObjects;
-    using Microsoft.WinGet.Client.PSObjects;
 
     /// <summary>
     /// Uninstalls a package from the local system.

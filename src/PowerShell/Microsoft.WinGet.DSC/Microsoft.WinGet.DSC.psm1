@@ -49,6 +49,24 @@ enum InstallMode
     Interactive
 }
 
+enum Scope
+{
+    Any
+    User
+    System
+    UserOrUnknown
+    SystemOrUnknown
+}
+
+enum Architecture
+{
+    Default
+    X86
+    Arm
+    X64
+    Arm64
+}
+
 #endregion enums
 
 #region DscResources
@@ -431,6 +449,21 @@ class WinGetPackage
     [Ensure]$Ensure = [Ensure]::Present
 
     [DscProperty()]
+    [Scope]$Scope = [Scope]::Any
+
+    [DscProperty()]
+    [Architecture]$Architecture = [Architecture]::Default
+
+    [DscProperty()]
+    [string]$Location
+
+    [DscProperty()]
+    [string]$Custom
+
+    [DscProperty()]
+    [string]$Override
+
+    [DscProperty()]
     [MatchOption]$MatchOption = [MatchOption]::EqualsCaseInsensitive
 
     [DscProperty()]
@@ -521,6 +554,9 @@ class WinGetPackage
             }
         }
 
+        # Check if the installed version matches the installed scope or, architecture, location, override, custom, scope
+        
+
         # For now this is all.
         return $true
     }
@@ -537,6 +573,11 @@ class WinGetPackage
                 Id = $this.Id
                 MatchOption = $this.MatchOption
                 Mode = $this.InstallMode
+                Scope = $this.Scope
+                Architecture = $this.Architecture
+                Location = $this.Location
+                Override = $this.Override
+                Custom = $this.Custom
             }
             
             if ($this.Ensure -eq [Ensure]::Present)

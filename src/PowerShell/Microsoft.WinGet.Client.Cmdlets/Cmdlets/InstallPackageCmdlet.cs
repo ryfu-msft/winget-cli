@@ -11,7 +11,6 @@ namespace Microsoft.WinGet.Client.Commands
     using Microsoft.WinGet.Client.Common;
     using Microsoft.WinGet.Client.Engine.Commands;
     using Microsoft.WinGet.Client.Engine.PSObjects;
-    using Microsoft.WinGet.Client.PSObjects;
 
     /// <summary>
     /// Installs a package from the pipeline or from a configured source.
@@ -27,12 +26,6 @@ namespace Microsoft.WinGet.Client.Commands
         private InstallerPackageCommand command = null;
 
         /// <summary>
-        /// Gets or sets the scope to install the application under.
-        /// </summary>
-        [Parameter(ValueFromPipelineByPropertyName = true)]
-        public PSPackageInstallScope Scope { get; set; } = PSPackageInstallScope.Any;
-
-        /// <summary>
         /// Gets or sets the architecture of the application to be installed.
         /// </summary>
         [Parameter(ValueFromPipelineByPropertyName = true)]
@@ -45,6 +38,8 @@ namespace Microsoft.WinGet.Client.Commands
         {
             this.command = new InstallerPackageCommand(
                         this,
+                        this.Scope,
+                        this.InstallerType,
                         this.Override,
                         this.Custom,
                         this.Location,
@@ -59,7 +54,7 @@ namespace Microsoft.WinGet.Client.Commands
                         this.Moniker,
                         this.Source,
                         this.Query);
-            this.command.Install(this.Scope.ToString(), this.Architecture.ToString(), this.MatchOption.ToString(), this.Mode.ToString());
+            this.command.Install(this.Architecture.ToString(), this.MatchOption.ToString(), this.Mode.ToString());
         }
 
         /// <summary>

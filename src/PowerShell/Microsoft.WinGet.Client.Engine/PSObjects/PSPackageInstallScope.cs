@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------------
 
-namespace Microsoft.WinGet.Client.PSObjects
+namespace Microsoft.WinGet.Client.Engine.PSObjects
 {
     /// <summary>
     /// This must match Microsoft.Management.Deployment.PackageInstallScope.

@@ -16,6 +16,30 @@ namespace Microsoft.WinGet.Client.Engine.Helpers
     internal static class PSEnumHelpers
     {
         /// <summary>
+        /// Converts PSPackageInstallerType string value to PackageInstallerType.
+        /// </summary>
+        /// <param name="value">PSPackageInstallerType to string value.</param>
+        /// <returns>PackageInstallerType.</returns>
+        public static PackageInstallerType ToPackageInstallerType(string value)
+        {
+            return value switch
+            {
+                "Unknown" => PackageInstallerType.Unknown,
+                "Inno" => PackageInstallerType.Inno,
+                "Wix" => PackageInstallerType.Wix,
+                "Msi" => PackageInstallerType.Msi,
+                "Nullsoft" => PackageInstallerType.Nullsoft,
+                "Zip" => PackageInstallerType.Zip,
+                "Msix" => PackageInstallerType.Msix,
+                "Exe" => PackageInstallerType.Zip,
+                "Burn" => PackageInstallerType.Burn,
+                "MSStore" => PackageInstallerType.MSStore,
+                "Portable" => PackageInstallerType.Portable,
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
+        /// <summary>
         /// Converts PSPackageInstallMode string value to PackageInstallMode.
         /// </summary>
         /// <param name="value">PSPackageInstallMode to string value.</param>
