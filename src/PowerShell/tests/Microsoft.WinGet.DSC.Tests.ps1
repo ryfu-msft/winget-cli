@@ -135,6 +135,7 @@ Describe 'WinGetSources' {
         $testSourceValue = @{
             Type = 'Microsoft.PreIndexed.Package'
             Arg = 'https://localhost:5001/TestKit/'
+            TrustLevel = 'Trusted'
         }
         
         InvokeWinGetDSC -Name WinGetSources -Method Set -Property @{ Action = 'Partial'; Ensure = 'Absent'; Sources = @{ $testSourceName = $testSourceValue }}

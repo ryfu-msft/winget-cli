@@ -42,7 +42,7 @@ BeforeAll {
             Get-WinGetSource -Name 'TestSource'
         }
         catch {
-            Add-WinGetSource -Name 'TestSource' -Arg 'https://localhost:5001/TestKit/'
+            Add-WinGetSource -Name 'TestSource' -Arg 'https://localhost:5001/TestKit/' -TrustLevel 'Trusted'
         }
     }
 

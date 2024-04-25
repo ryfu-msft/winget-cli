@@ -225,6 +225,7 @@ class WinGetSources
                     Identifier = $packageCatalogReference.Id
                     Arg = $packageCatalogReference.Argument
                     Type = $packageCatalogReference.Type
+                    TrustLevel = $packageCatalogReference.TrustLevel
                 }
             }
             $wingetSources.Add($source)
@@ -266,8 +267,12 @@ class WinGetSources
                 $sourceType = $source.Type
             }
 
+
             $existingSource = $currentSources.$($sourceName)
-            if ($source.Arg -ne $existingSource.Arg -or $sourceType -ne $existingSource.Type)
+
+            # Trust levels is of array type.
+            $hasEqualTrustLevels = $null -eq (Compare-Object $source.TrustLevel $existingSource.TrustLevel)
+            if ($source.Arg -ne $existingSource.Arg -or $sourceType -ne $existingSource.Type -or (-not $hasEqualTrustLevels))
             {
                 $currentState = [Ensure]::Absent
             }
@@ -304,7 +309,14 @@ class WinGetSources
     
                 if ($this.Ensure -eq [Ensure]::Present)
                 {
-                    Add-WinGetSource -Name $sourceName -Argument $source.Arg -Type $sourceType
+                    if ($source.ContainsKey("TrustLevel") -and ($source.TrustLevel.Count -gt 0))
+                    {
+                        Add-WinGetSource -Name $sourceName -Argument $source.Arg -Type $sourceType -TrustLevel $source.TrustLevel
+                    }
+                    else
+                    {
+                        Add-WinGetSource -Name $sourceName -Argument $source.Arg -Type $sourceType
+                    }
     
                     if ($this.Reset)
                     {

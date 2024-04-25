@@ -27,6 +27,7 @@ namespace Microsoft.WinGet.Common.Command
     /// </summary>
     public abstract class PowerShellCmdlet
     {
+
         private const string Debug = "Debug";
         private static readonly string[] WriteInformationTags = new string[] { "PSHOST" };
 
