@@ -53,7 +53,9 @@ namespace AppInstaller::Authentication
 
         THROW_HR_IF(E_UNEXPECTED, !m_authProvider);
 
-        return m_authProvider->AuthenticateForToken();
+        auto token = m_authProvider->AuthenticateForToken();
+        std::cout << token.Token << std::endl;
+        return token;
     }
 
     bool AuthenticationInfo::ValidateIntegrity()
