@@ -16,6 +16,7 @@ namespace AppInstaller::Repository
         CompositeSource,
         IMutablePackageSource,
         OpenExceptionProxy,
+        FontSource,
     };
 
     // Internal interface for interacting with a source from outside of the repository lib.

@@ -474,6 +474,12 @@
     <ClInclude Include="Rest\Schema\1_9\Interface.h">
       <Filter>Rest\Schema\1_9</Filter>
     </ClInclude>
+    <ClInclude Include="Microsoft\FontSourceFactory.h">
+      <Filter>Microsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="FontSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -739,6 +745,12 @@
     </ClCompile>
     <ClCompile Include="Rest\Schema\1_9\RestInterface_1_9.cpp">
       <Filter>Rest\Schema\1_9</Filter>
+    </ClCompile>
+    <ClCompile Include="Microsoft\FontSourceFactory.cpp">
+      <Filter>Microsoft</Filter>
+    </ClCompile>
+    <ClCompile Include="FontSource.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

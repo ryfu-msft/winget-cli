@@ -344,10 +344,12 @@
   <ItemGroup>
     <ClInclude Include="ArpVersionValidation.h" />
     <ClInclude Include="CompositeSource.h" />
+    <ClInclude Include="FontSource.h" />
     <ClInclude Include="IconDefs.h" />
     <ClInclude Include="ISource.h" />
     <ClInclude Include="Microsoft\ARPHelper.h" />
     <ClInclude Include="Microsoft\PinningIndex.h" />
+    <ClInclude Include="Microsoft\FontSourceFactory.h" />
     <ClInclude Include="Microsoft\PredefinedInstalledSourceFactory.h" />
     <ClInclude Include="Microsoft\PredefinedWriteableSourceFactory.h" />
     <ClInclude Include="Microsoft\PreIndexedPackageSourceFactory.h" />
@@ -470,6 +472,7 @@
     <ClCompile Include="IconExtraction.cpp" />
     <ClCompile Include="ArpVersionValidation.cpp" />
     <ClCompile Include="CompositeSource.cpp" />
+    <ClCompile Include="FontSource.cpp" />
     <ClCompile Include="InstalledFilesCorrelation.cpp" />
     <ClCompile Include="InstallerMetadataCollectionContext.cpp" />
     <ClCompile Include="ManifestJSONParser.cpp" />
@@ -477,6 +480,7 @@
     <ClCompile Include="Microsoft\ConfigurableTestSourceFactory.cpp" />
     <ClCompile Include="Microsoft\PinningIndex.cpp" />
     <ClCompile Include="Microsoft\PortableIndex.cpp" />
+    <ClCompile Include="Microsoft\FontSourceFactory.cpp" />
     <ClCompile Include="Microsoft\PredefinedInstalledSourceFactory.cpp" />
     <ClCompile Include="Microsoft\PredefinedWriteableSourceFactory.cpp" />
     <ClCompile Include="Microsoft\PreIndexedPackageSourceFactory.cpp" />

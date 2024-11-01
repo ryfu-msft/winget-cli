@@ -290,6 +290,7 @@ namespace AppInstaller::Repository
         SQLitePackage2,
         PinnablePackage,
         CompositeInstalledPackage,
+        FontPackage,
     };
 
     // Contains a collection of package versions.
